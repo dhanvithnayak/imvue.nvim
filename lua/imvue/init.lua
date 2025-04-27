@@ -30,7 +30,9 @@ M.setup = function(config)
             M.image_extensions[ext:lower()] = true
         end
     else
-        vim.notify('Incorrect config format', vim.log.levels.WARN)
+        for ext, val in pairs(extensions) do
+            M.image_extensions[ext:lower()] = val
+        end
     end
 end
 
