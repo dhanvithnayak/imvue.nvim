@@ -1,22 +1,45 @@
 local M = {}
 
-local image_extensions = {
-  png = true,
-  jpg = true,
-  jpeg = true,
-  gif = true,
-  svg = true,
-  webp = true,
-  bmp = true,
-  tiff = true,
+local default_extensions = {
+    png = true,
+    jpg = true,
+    jpeg = true,
+    gif = true,
+    svg = true,
+    webp = true,
+    bmp = true,
+    tiff = true,
 }
+
+M.setup = function(config)
+    config = config or {}
+    local use_defaults = config.use_default_extensions ~= false
+
+    M.image_extensions = {}
+
+    if use_defaults then
+        for ext, _ in pairs(default_extensions) do
+            M.image_extensions[ext] = true
+        end
+    end
+
+    local extensions = config.extensions or {}
+
+    if vim.isarray(extensions) then
+        for _, ext in ipairs(extensions) do
+            M.image_extensions[ext:lower()] = true
+        end
+    else
+        vim.notify('Incorrect config format', vim.log.levels.WARN)
+    end
+end
 
 M.open_image = function(bufnr)
     local bufname = vim.api.nvim_buf_get_name(bufnr)
     local full_path = vim.fn.fnamemodify(bufname, ':p')
     local extension = full_path:match('%.([^%.]+)$')
 
-    if not extension or not image_extensions[extension:lower()] then
+    if not extension or not M.image_extensions[extension:lower()] then
         return
     end
 
