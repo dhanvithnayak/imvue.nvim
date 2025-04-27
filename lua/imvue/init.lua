@@ -1,3 +1,5 @@
+local M = {}
+
 local image_extensions = {
   png = true,
   jpg = true,
@@ -9,9 +11,7 @@ local image_extensions = {
   tiff = true,
 }
 
-local augroup = vim.api.nvim_create_augroup("ImgVue", { clear = true})
-
-local function open_image(bufnr)
+M.open_image = function(bufnr)
     local bufname = vim.api.nvim_buf_get_name(bufnr)
     local full_path = vim.fn.fnamemodify(bufname, ':p')
     local extension = full_path:match('%.([^%.]+)$')
@@ -35,15 +35,4 @@ local function open_image(bufnr)
     end)
 end
 
-local function setup()
-    vim.api.nvim_create_autocmd('BufReadPre', {
-        group = augroup,
-        desc = "Open image in default application when opened in neovim",
-        pattern = '*',
-        callback = function(args)
-            open_image(args.buf)
-        end,
-    })
-end
-
-return { setup = setup }
+return M
